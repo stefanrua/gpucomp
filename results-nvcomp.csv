@@ -1,0 +1,7 @@
+Compressor name,Files,Duplicate data,Size in MB,Pages,Avg page size in KB,Max page size in KB,Ucompressed size in bytes,Compressed size in bytes,Compression ratio,Compression throughput (uncompressed) in GB/s,Decompression throughput (uncompressed) in GB/s
+nvcomp_ans,100,0,137.052,2147,63.8344,65.536,137052465,96177436,1.42,21.77,53.71
+nvcomp_bitcomp,100,0,137.052,2147,63.8344,65.536,137052465,126905312,1.08,70.05,55.40
+nvcomp_deflate,100,0,137.052,2147,63.8344,65.536,137052465,85340769,1.61,0.86,3.81
+nvcomp_gdeflate,100,0,137.052,2147,63.8344,65.536,137052465,85748376,1.60,0.90,15.59
+nvcomp_lz4,100,0,137.052,2147,63.8344,65.536,137052465,97938511,1.40,1.17,12.23
+nvcomp_snappy,100,0,137.052,2147,63.8344,65.536,137052465,94668453,1.45,2.52,11.50
