@@ -1,0 +1,10 @@
+command,ratio,throughput
+bsc e results-bsc.csv results-bsc.csv.bsc -b1 -m3 -cf -e0 -H10 -M4,0.09422279811819446,13328803.738898508
+bsc e results-bsc.csv results-bsc.csv.bsc -b1 -m3 -cf -e0 -H10 -M128,0.09250001840576616,12869916.626937153
+bsc e results-bsc.csv results-bsc.csv.bsc -b1 -m3 -cf -e0 -H10 -M255,0.09260309069625332,19814953.54624187
+bsc e results-bsc.csv results-bsc.csv.bsc -b1 -m3 -cf -e0 -H15 -M4,0.08504936426483689,17105531.584086474
+bsc e results-bsc.csv results-bsc.csv.bsc -b1 -m3 -cf -e0 -H15 -M128,0.09195520772747687,18891753.86019366
+bsc e results-bsc.csv results-bsc.csv.bsc -b1 -m3 -cf -e0 -H15 -M255,0.0920435554050373,13971447.160290366
+bsc e results-bsc.csv results-bsc.csv.bsc -b1 -m3 -cf -e0 -H28 -M4,0.08658072400921761,6525097.405857357
+bsc e results-bsc.csv results-bsc.csv.bsc -b1 -m3 -cf -e0 -H28 -M128,0.09195520772747687,5538539.674006669
+bsc e results-bsc.csv results-bsc.csv.bsc -b1 -m3 -cf -e0 -H28 -M255,0.09207300463089077,5521576.79917035

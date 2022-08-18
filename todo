@@ -1,0 +1,43 @@
+little time, need to prioritize:
+- benchmark on separated pp event files (p9)
+x slides
+~ report
+- poster
+- lzbench
+
+lzbench: build all the things with the same flags (pr when done)
+x bsc
+- dietgpu
+x libnxz
+
+general:
+- try dietgpu on multiple files in parallel?
+- benchmark on a larger set of files?
+
+report:
+? nvcomp binaries not for p9
+  - maybe check nvidia download site?
+  - maybe don't care, it's proprietary anyway?
+? explain dictionary matching and entropy coding
+? explain lz variants
+? run crude on same data
+
+bsc:
+- -b1 -m6 -cf -e0 -H15 -M4 -G
+- -b1 -m3 -cf -e0 -H10 -M4
+   ?       ?  <-- how to change these in lzbench?
+   |       |
+   |      this is fine as is
+   this one is fine-ish
+- H28 is very slow, never use it
+- option test says that on gpu it's slower
+- small block size (-b1 = 1 MB) speeds it up on small file (5 MB) when multithreaded, as block are processed in parallel
+  - not a reasonable comparison when running cpu only as other compressors are run single-threaded
+  - doesn't really improve gpu runs
+note: -T includes -t
+- wait for big file test to finish
+
+poster:
+
+
+
