@@ -1,0 +1,48 @@
+todo
+----
+
+x report (get approved by andrea)
+    x full compressor consist of multiple basic algos
+    x xz are utilites that use lzma
+    x basic algos to list (or skip)
+    x cpu compressors to list
+    x gpu: these are some of what i found when looking for stuff
+    x table to one page
+x poster
+- lzbench
+    x make the master branch compile
+    - compile everythig with the same flags (pr when done)
+        x bsc
+        - dietgpu
+        x libnxz
+    - culzss
+
+
+notes
+-----
+
+g-match, a gpu compression algorithm (no code):
+http://staff.ustc.edu.cn/~bhua/publications/HPCC-Lu.pdf
+
+fast huffman decoder:
+https://github.com/weissenberger/gpuhd
+https://dl.acm.org/doi/pdf/10.1145/3225058.3225076
+
+potentially interesting for fp data:
+https://github.com/fknorr/ndzip
+https://dps.uibk.ac.at/~fabian/publications/2021-ndzip-gpu-efficient-lossless-compression-of-scientific-floating-point-data-on-gpus.pdf
+
+bsc:
+- -b1 -m6 -cf -e0 -H15 -M4 -G
+- -b1 -m3 -cf -e0 -H10 -M4
+   ?       ?  <-- how to change these in lzbench?
+   |       |
+   |      this is fine as is
+   this one is fine-ish
+- H28 is very slow, never use it
+- option test says that on gpu it's slower
+- small block size (-b1 = 1 MB) speeds it up on small file (5 MB) when multithreaded, as block are processed in parallel
+  - not a reasonable comparison when running cpu only as other compressors are run single-threaded
+  - doesn't really improve gpu runs
+note: -T includes -t
+- wait for big file test to finish
