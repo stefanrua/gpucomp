@@ -24,19 +24,21 @@
 <br />
 <strong>Andrea Bocci</strong><br />
 <code>andrea.bocci@cern.ch</code><br />
+<br />
+<br />
 </p>
 <p>We present the results of a study on the use of GPUs for data compression, using collision data collected by the CMS experiment as a case study.</p>
-<h1 id="introduction">Introduction</h1>
+<h2 id="introduction">Introduction</h2>
 <!--
 The Compact Muon Solenoid (CMS) is a detector and an experiment at CERN. It gathers data on collisions taking place in the Large Hadron Collider (LHC). Not all of the data contains interesting events, and it goes through multiple levels of triggers where most of it is discarded. The last trigger is the High Level Trigger (HLT), from which the data is sent to datacenters away from the detector. In order to speed up the network transfers between the HLT and datacenters, the data is compressed.
 -->
 <p>The Large Hadron Collider (LHC) at CERN can accelerate and collide protons or heavier ions, usually lead nuclei. The Compact Muon Solenoid (CMS) experiment uses a complex detector to analyse the particles produced in these collisions. As the LHC can generate collisions up to 40 MHz, which would result in too much data to be read out and stored for offline processing, CMS uses a trigger system with two level to select only the most interesting collision events: the first level, called Level-1 Trigger, uses FPGAs and dedicated electronics to reduce the data rate to a maximum of 100 kHz; the last level, call High Level Trigger (HLT), runs a streamlined version of the CMS reconstruction software (CMSSW) on a computer farm to further reduce the data rate to an average of a few kHz; from the beginning of Run-3 in 2022 the HLT farm has been equipped with GPUs. The data selected by the HLT is transferred to the Tier-0 datacentre in the CERN campus for storage and further processing. In order to speed up the data aggregation inside the HLT and the network transfers between the HLT and Tier-0, the data is compressed.</p>
-<h1 id="motivation">Motivation</h1>
+<h2 id="motivation">Motivation</h2>
 <!--
 Currently the data is compressed using CPUs which are used for other workloads as well. The machines at the HLT are equipped with GPUs, so it would be good to reduce CPU time taken by the compression workload by transferring it onto the GPUs.
 -->
 <p>Currently the data are compressed using CPUs; as the HLT machines are equipped with GPUs, we investigate the possibility of offloading the data compression to GPUs, to free up the CPUs for performing other tasks. We also investigate the performance of the NX on-chip data compression accelerator integrated in the IBM POWER9 processors; while such machines are not used at HLT, they are used at HPC sites that run the CMS reconstruction software.</p>
-<h1 id="benchmarking">Benchmarking</h1>
+<h2 id="benchmarking">Benchmarking</h2>
 <p>We implemented the compressors into a benchmarking program called <code>lzbench</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. When possible, compressors are compiled with the same compiler options to achieve the fairest possible comparison. <code>lzbench</code> runs the compression in memory, meaning that disk reads and writes are excluded. The benchmarks were run on two machines: one with a configuration similar to the machines in the HLT farm, and a POWER9 machine.</p>
 <h3 id="hlt-like-machine">HLT-like machine</h3>
 <p>This machine is equipped with two AMD EPYC “Milan” 75F3 CPUs<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> and two Nvidia T4 GPUs<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>:</p>
@@ -161,7 +163,7 @@ Compression library by Nvidia, unfortunately made proprietary in version 2.3.
 - RAM $\rightarrow$ GPU memory **included**
 - Fastest from 5 repeats
 -->
-<h1 id="results">Results</h1>
+<h2 id="results">Results</h2>
 <p><img src="results/hlt-pp.png" /></p>
 <p><img src="results/p9-pp.png" /></p>
 <p><img src="results/hlt-hi.png" /></p>
@@ -173,11 +175,11 @@ Note: these were simply run from the command line and timed using the `time` com
 
 ![](results/first.png){ width=80% }
 -->
-<h1 id="conclusion-and-future-work">Conclusion and future work</h1>
+<h2 id="conclusion-and-future-work">Conclusion and future work</h2>
 <p>Using the CPU compressor <code>zstd</code> is a reasonable choice with our current hardware and the current state of GPU compressors. <code>dietgpu</code> is promising, and may see significant improvements in the future, as it is in a very early stage in development. <code>dietgpu</code> uses a compression algorithm called Asymmetric Numeral Systems, which is an important part of <code>zstd</code> as well. This looks promising for a future GPU implementation of <code>zstd</code>.</p>
 <p>In the future it will be interesting to benchmark other hardware accelerated compression engines, like Intel Quick Assist that will be available in the upcoming Intel Sapphire Rapids Xeon CPUs.</p>
 <p>Our fork of lzbench<a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a> and the code used to generate the plots<a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a> are available on github.</p>
-<h1 id="references">References</h1>
+<h2 id="references">References</h2>
 <!--
 | Name | Device | Code |
 |:-----|:-------|:-------|

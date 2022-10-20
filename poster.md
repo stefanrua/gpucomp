@@ -7,11 +7,12 @@ title: Exploration of GPU-enabled lossless compressors
 \
 **Andrea Bocci** \
 `andrea.bocci@cern.ch` \
-
+\
+\
 
 We present the results of a study on the use of GPUs for data compression, using collision data collected by the CMS experiment as a case study.
 
-# Introduction
+## Introduction
 
 <!--
 The Compact Muon Solenoid (CMS) is a detector and an experiment at CERN. It gathers data on collisions taking place in the Large Hadron Collider (LHC). Not all of the data contains interesting events, and it goes through multiple levels of triggers where most of it is discarded. The last trigger is the High Level Trigger (HLT), from which the data is sent to datacenters away from the detector. In order to speed up the network transfers between the HLT and datacenters, the data is compressed.
@@ -20,7 +21,7 @@ The Compact Muon Solenoid (CMS) is a detector and an experiment at CERN. It gath
 The Large Hadron Collider (LHC) at CERN can accelerate and collide protons or heavier ions, usually lead nuclei. The Compact Muon Solenoid (CMS) experiment uses a complex detector to analyse the particles produced in these collisions. As the LHC can generate collisions up to 40 MHz, which would result in too much data to be read out and stored for offline processing, CMS uses a trigger system with two level to select only the most interesting collision events: the first level, called Level-1 Trigger, uses FPGAs and dedicated electronics to reduce the data rate to a maximum of 100 kHz; the last level, call High Level Trigger (HLT), runs a streamlined version of the CMS reconstruction software (CMSSW) on a computer farm to further reduce the data rate to an average of a few kHz; from the beginning of Run-3 in 2022 the HLT farm has been equipped with GPUs. The data selected by the HLT is transferred to the Tier-0 datacentre in the CERN campus for storage and further processing. In order to speed up the data aggregation inside the HLT and the network transfers between the HLT and Tier-0, the data is compressed.
 
 
-# Motivation
+## Motivation
 
 <!--
 Currently the data is compressed using CPUs which are used for other workloads as well. The machines at the HLT are equipped with GPUs, so it would be good to reduce CPU time taken by the compression workload by transferring it onto the GPUs.
@@ -30,7 +31,7 @@ Currently the data are compressed using CPUs; as the HLT machines are equipped w
 We also investigate the performance of the NX on-chip data compression accelerator integrated in the IBM POWER9 processors; while such machines are not used at HLT, they are used at HPC sites that run the CMS reconstruction software.
 
 
-# Benchmarking
+## Benchmarking
 
 We implemented the compressors into a benchmarking program called `lzbench`[^lzbench]. When possible, compressors are compiled with the same compiler options to achieve the fairest possible comparison. `lzbench` runs the compression in memory, meaning that disk reads and writes are excluded.
 The benchmarks were run on two machines: one with a configuration similar to the machines in the HLT farm, and a POWER9 machine.
@@ -157,7 +158,7 @@ The second set of measurements were performed using 100 events from lead-lead co
 -->
 
 
-# Results
+## Results
 
 ![](results/hlt-pp.png)
 
@@ -176,7 +177,7 @@ Note: these were simply run from the command line and timed using the `time` com
 -->
 
 
-# Conclusion and future work
+## Conclusion and future work
 
 Using the CPU compressor `zstd` is a reasonable choice with our current hardware and the current state of GPU compressors. `dietgpu` is promising, and may see significant improvements in the future, as it is in a very early stage in development. `dietgpu` uses a compression algorithm called Asymmetric Numeral Systems, which is an important part of `zstd` as well. This looks promising for a future GPU implementation of `zstd`.
 
@@ -184,7 +185,7 @@ In the future it will be interesting to benchmark other hardware accelerated com
 
 Our fork of lzbench[^lzbench_fork] and the code used to generate the plots[^gpucomp] are available on github.
 
-# References
+## References
 
 [^bsc]: **libbsc** \
 A program and a library for lossless, block-sorting data compression \
