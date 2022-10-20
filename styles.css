@@ -3,9 +3,8 @@
 
 body {
     font-family: 'Roboto';
-    margin: 50px auto;
-    min-width: 800px;
-    max-width: 40%;
+    margin: 50px;
+    max-width: 800px;
 }
 
 h1 {
