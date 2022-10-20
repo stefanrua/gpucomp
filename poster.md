@@ -8,36 +8,39 @@ author: Stefan Rua
 `stefan.rua@iki.fi`
 
 
-# TL;DR
+We present the results of a study on the use of GPUs for data compression, using collision data collected by the CMS experiment as a case study.
 
-I benchmarked lossless compressors that run on the GPU, here are the results:
-
+<!--
 ![](results/combined-pp-nolegend.png){ width=80% } \
 
 * = GPU \
-** = Something else, find out by reading the rest! \
-
+** = NX \
+-->
 
 # Background
 
-The Compact Muon Solenoid (CMS) is a detector and an experiment at CERN. It gather data on collisions taking place in the Large Hadron Collider (LHC). Not all of the data contains interesting events, and it goes through multiple levels of triggers where most of it is discarded. The last trigger is the High Level Trigger (HLT), from which the data is sent to datacenters away from the detector. In order to speed up the network transfers between the HLT and datacenters, the data is compressed.
+The Compact Muon Solenoid (CMS) is a detector and an experiment at CERN. It gathers data on collisions taking place in the Large Hadron Collider (LHC). Not all of the data contains interesting events, and it goes through multiple levels of triggers where most of it is discarded. The last trigger is the High Level Trigger (HLT), from which the data is sent to datacenters away from the detector. In order to speed up the network transfers between the HLT and datacenters, the data is compressed.
 
 
-# Why?
+# Motivation
 
-Currently the data is compressed using CPUs which are used for other things as well. The machines at the HLT are equipped with GPUs, so it would be nice to free up some CPU time by transferring the compression workload onto the GPUs. GPUs can also be very fast.
+Currently the data is compressed using CPUs which are used for other workloads as well. The machines at the HLT are equipped with GPUs, so it would be good to reduce CPU time taken by the compression workload by transferring it onto the GPUs. <!--GPUs can also be very fast.-->
 
 
+<!--
 # What I did
 
 - Looked for GPU compressor implementations
 - Added them to a benchmarking program
 - Compared them to CPU compressors
+-->
 
 
 # Benchmarking
 
-First I ran some simple tests using the `time` command and  the standalone executables of the compressors. After determining the most promising ones, I implemented them into a benchmarking program called `lzbench` to get proper measuremets that exclude disk reads and writes. The benchmarks were run on two machines, one that resembles the machines in the HLT and a POWER9 machine. The HLT doesn't have POWER9 machines, but I wanted to try out `libnxz`, a zlib-compatible library that makes use of the NX GZIP hardware accelerator present on that chip.
+We implemented the compressors into a benchmarking program called `lzbench`. When possible, compressors are compiled with the same compiler options to achieve the fairest possible comparison. `lzbench` runs the compression in memory, meaning that disk reads and writes are excluded.
+
+The benchmarks were run on two machines, one that resembles the machines in the HLT and a POWER9 machine. The HLT doesn't have POWER9 machines, but we wanted to investigate `libnxz`, a zlib-compatible library that makes use of the NX GZIP hardware accelerator present on the POWER9 chip.
 
 
 ## Compressors
@@ -51,7 +54,7 @@ First I ran some simple tests using the `time` command and  the standalone execu
 | `nvcomp`[^nvcomp]^,^[^nvcomp_git] | Compression library by Nvidia, unfortunately made proprietary in version 2.3. |
 -->
 
-These are the compressors I tested in `lzbench`. Links to these can be found in the "Links" section.
+Following is a list of the compressors we benchmarked. Links to their source code be found in the "Links" section.
 
 - `bsc` \
 Block-sorting compressor by Ilya Grebnov. \
@@ -60,7 +63,7 @@ Asymmetric numeral systems (ANS) implementation by Facebook. \
 - `libxz` \
 IBM's POWER9 processors have a hardware accelerator for `gzip` called NX. `libnxz` is the library for compressing on it. \
 - `nvcomp` \
-Compression library by Nvidia, unfortunately made proprietary in version 2.3. I tested the earlier open source version which was already in `lzbench`.
+Compression library by Nvidia, unfortunately made proprietary in version 2.3. We tested the earlier open source version which was already in `lzbench`.
 
 <!--
 - `bsc`[^bsc] \
@@ -85,7 +88,7 @@ Compression library by Nvidia, unfortunately made proprietary in version 2.3.
 
 ## Data
 
-Two types of collisions take place at the LHC: proton-proton and heavy ion collisions. I ran the benchmarks on both types of data.
+Two types of collisions take place at the LHC: proton-proton and heavy ion collisions. We ran the benchmarks on both types of data.
 
 ### Proton-proton events
 
@@ -149,7 +152,7 @@ Two types of collisions take place at the LHC: proton-proton and heavy ion colli
 
 ![](results/combined-pp.png){ width=80% } \
 
-* = GPU \
+\* = GPU \
 ** = NX \
 no star = CPU
 
@@ -158,7 +161,7 @@ no star = CPU
 
 ![](results/combined-hi.png){ width=80% } \
 
-* = GPU \
+\* = GPU \
 ** = NX \
 no star = CPU
 
@@ -173,7 +176,7 @@ Note: these were simply run from the command line and timed using the `time` com
 
 # Conclusion
 
-Using the CPU compressor `zstd` seems to be the reasonable choice with our current hardware and the state of GPU compressors. An eye should be kept on `dietgpu`, as it is still in its infancy and under rapid development. `dietgpu` uses a compression algorithm called Asymmetric Numeral Systems (ANS)[^ans_paper], which is an important part of `zstd` as well. This looks promising for a future GPU implementation of `zstd`.
+Using the CPU compressor `zstd` is a reasonable choice with our current hardware and the current state of GPU compressors. `dietgpu` is promising, and may see significant improvements in the future, as it is in a very early stage in development. `dietgpu` uses a compression algorithm called Asymmetric Numeral Systems (ANS)[^ans_paper], which is an important part of `zstd` as well. This looks promising for a future GPU implementation of `zstd`.
 
 [^ans_paper]: <https://arxiv.org/pdf/1311.2540.pdf>
 
@@ -211,5 +214,5 @@ Using the CPU compressor `zstd` seems to be the reasonable choice with our curre
 ## Benchmarking and plotting
 
 - `lzbench`, the benchmarking program: <https://github.com/inikep/lzbench> \
-- my fork of `lzbench`, the benchmarking program: <https://github.com/stefanrua/lzbench> \
-- `gpucomp`, the code for my plots and a report: <https://github.com/stefanrua/gpucomp>
+- our fork of `lzbench`: <https://github.com/stefanrua/lzbench> \
+- `gpucomp`, the code for the plots and a report: <https://github.com/stefanrua/gpucomp>

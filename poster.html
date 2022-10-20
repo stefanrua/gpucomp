@@ -1,39 +1,49 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Stefan Rua" />
   <title>Exploration of GPU-enabled lossless compressors</title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="styles.css" type="text/css" />
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div id="header">
+<header id="title-block-header">
 <h1 class="title">Exploration of GPU-enabled lossless compressors</h1>
-<h2 class="author">Stefan Rua</h2>
-</div>
+<p class="author">Stefan Rua</p>
+</header>
 <p><code>stefan.elias.rua@cern.ch</code><br />
 <!--`stefan.rua@aalto.fi` \--> <code>stefan.rua@iki.fi</code></p>
-<h1 id="tldr">TL;DR</h1>
-<p>I benchmarked lossless compressors that run on the GPU, here are the results:</p>
-<p><img src="results/combined-pp-nolegend.png" style="width:80.0%" /><br />
-* = GPU<br />
-** = Something else, find out by reading the rest!<br />
-</p>
+<p>We present the results of a study on the use of GPUs for data compression, using collision data collected by the CMS experiment as a case study.</p>
+<!--
+![](results/combined-pp-nolegend.png){ width=80% } \
+
+* = GPU \
+** = NX \
+-->
 <h1 id="background">Background</h1>
-<p>The Compact Muon Solenoid (CMS) is a detector and an experiment at CERN. It gather data on collisions taking place in the Large Hadron Collider (LHC). Not all of the data contains interesting events, and it goes through multiple levels of triggers where most of it is discarded. The last trigger is the High Level Trigger (HLT), from which the data is sent to datacenters away from the detector. In order to speed up the network transfers between the HLT and datacenters, the data is compressed.</p>
-<h1 id="why">Why?</h1>
-<p>Currently the data is compressed using CPUs which are used for other things as well. The machines at the HLT are equipped with GPUs, so it would be nice to free up some CPU time by transferring the compression workload onto the GPUs. GPUs can also be very fast.</p>
-<h1 id="what-i-did">What I did</h1>
-<ul>
-<li>Looked for GPU compressor implementations</li>
-<li>Added them to a benchmarking program</li>
-<li>Compared them to CPU compressors</li>
-</ul>
+<p>The Compact Muon Solenoid (CMS) is a detector and an experiment at CERN. It gathers data on collisions taking place in the Large Hadron Collider (LHC). Not all of the data contains interesting events, and it goes through multiple levels of triggers where most of it is discarded. The last trigger is the High Level Trigger (HLT), from which the data is sent to datacenters away from the detector. In order to speed up the network transfers between the HLT and datacenters, the data is compressed.</p>
+<h1 id="motivation">Motivation</h1>
+<p>Currently the data is compressed using CPUs which are used for other workloads as well. The machines at the HLT are equipped with GPUs, so it would be good to reduce CPU time taken by the compression workload by transferring it onto the GPUs. <!--GPUs can also be very fast.--></p>
+<!--
+# What I did
+
+- Looked for GPU compressor implementations
+- Added them to a benchmarking program
+- Compared them to CPU compressors
+-->
 <h1 id="benchmarking">Benchmarking</h1>
-<p>First I ran some simple tests using the <code>time</code> command and the standalone executables of the compressors. After determining the most promising ones, I implemented them into a benchmarking program called <code>lzbench</code> to get proper measuremets that exclude disk reads and writes. The benchmarks were run on two machines, one that resembles the machines in the HLT and a POWER9 machine. The HLT doesn't have POWER9 machines, but I wanted to try out <code>libnxz</code>, a zlib-compatible library that makes use of the NX GZIP hardware accelerator present on that chip.</p>
+<p>We implemented the compressors into a benchmarking program called <code>lzbench</code>. When possible, compressors are compiled with the same compiler options to achieve the fairest possible comparison. <code>lzbench</code> runs the compression in memory, meaning that disk reads and writes are excluded.</p>
+<p>The benchmarks were run on two machines, one that resembles the machines in the HLT and a POWER9 machine. The HLT doesn’t have POWER9 machines, but we wanted to investigate <code>libnxz</code>, a zlib-compatible library that makes use of the NX GZIP hardware accelerator present on the POWER9 chip.</p>
 <h2 id="compressors">Compressors</h2>
 <!--
 | Name | Description |
@@ -43,7 +53,7 @@
 | `libxz`[^libnxz]^,^[^libnxz_git] | IBM's POWER9 processors have a hardware accelerator, NX, for `gzip`. `libnxz` is the library for compressing on it. |
 | `nvcomp`[^nvcomp]^,^[^nvcomp_git] | Compression library by Nvidia, unfortunately made proprietary in version 2.3. |
 -->
-<p>These are the compressors I tested in <code>lzbench</code>. Links to these can be found in the &quot;Links&quot; section.</p>
+<p>Following is a list of the compressors we benchmarked. Links to their source code be found in the “Links” section.</p>
 <ul>
 <li><code>bsc</code><br />
 Block-sorting compressor by Ilya Grebnov.<br />
@@ -52,10 +62,10 @@ Block-sorting compressor by Ilya Grebnov.<br />
 Asymmetric numeral systems (ANS) implementation by Facebook.<br />
 </li>
 <li><code>libxz</code><br />
-IBM's POWER9 processors have a hardware accelerator for <code>gzip</code> called NX. <code>libnxz</code> is the library for compressing on it.<br />
+IBM’s POWER9 processors have a hardware accelerator for <code>gzip</code> called NX. <code>libnxz</code> is the library for compressing on it.<br />
 </li>
 <li><code>nvcomp</code><br />
-Compression library by Nvidia, unfortunately made proprietary in version 2.3. I tested the earlier open source version which was already in <code>lzbench</code>.</li>
+Compression library by Nvidia, unfortunately made proprietary in version 2.3. We tested the earlier open source version which was already in <code>lzbench</code>.</li>
 </ul>
 <!--
 - `bsc`[^bsc] \
@@ -77,7 +87,7 @@ Compression library by Nvidia, unfortunately made proprietary in version 2.3.
 [^nvcomp_git]: <https://github.com/NVIDIA/nvcomp>
 -->
 <h2 id="data">Data</h2>
-<p>Two types of collisions take place at the LHC: proton-proton and heavy ion collisions. I ran the benchmarks on both types of data.</p>
+<p>Two types of collisions take place at the LHC: proton-proton and heavy ion collisions. We ran the benchmarks on both types of data.</p>
 <h3 id="proton-proton-events">Proton-proton events</h3>
 <!--
 - HadronsTaus stream from 2022
@@ -142,12 +152,14 @@ Compression library by Nvidia, unfortunately made proprietary in version 2.3.
 <h1 id="results">Results</h1>
 <h2 id="proton-proton-events-1">Proton-proton events</h2>
 <p><img src="results/combined-pp.png" style="width:80.0%" /><br />
-* = GPU<br />
+</p>
+<p>* = GPU<br />
 ** = NX<br />
 no star = CPU</p>
 <h2 id="heavy-ion-events-1">Heavy ion events</h2>
 <p><img src="results/combined-hi.png" style="width:80.0%" /><br />
-* = GPU<br />
+</p>
+<p>* = GPU<br />
 ** = NX<br />
 no star = CPU</p>
 <!--
@@ -158,57 +170,57 @@ Note: these were simply run from the command line and timed using the `time` com
 ![](results/first.png){ width=80% }
 -->
 <h1 id="conclusion">Conclusion</h1>
-<p>Using the CPU compressor <code>zstd</code> seems to be the reasonable choice with our current hardware and the state of GPU compressors. An eye should be kept on <code>dietgpu</code>, as it is still in its infancy and under rapid development. <code>dietgpu</code> uses a compression algorithm called Asymmetric Numeral Systems (ANS)<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>, which is an important part of <code>zstd</code> as well. This looks promising for a future GPU implementation of <code>zstd</code>.</p>
+<p>Using the CPU compressor <code>zstd</code> is a reasonable choice with our current hardware and the current state of GPU compressors. <code>dietgpu</code> is promising, and may see significant improvements in the future, as it is in a very early stage in development. <code>dietgpu</code> uses a compression algorithm called Asymmetric Numeral Systems (ANS)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, which is an important part of <code>zstd</code> as well. This looks promising for a future GPU implementation of <code>zstd</code>.</p>
 <h1 id="links">Links</h1>
 <h2 id="compressors-1">Compressors</h2>
 <table>
 <thead>
 <tr class="header">
-<th align="left">Name</th>
-<th align="left">Device</th>
-<th align="left">Code</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Device</th>
+<th style="text-align: left;">Code</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left"><code>bsc</code></td>
-<td align="left">GPU</td>
-<td align="left"><a href="https://github.com/IlyaGrebnov/libbsc" class="uri">https://github.com/IlyaGrebnov/libbsc</a></td>
+<td style="text-align: left;"><code>bsc</code></td>
+<td style="text-align: left;">GPU</td>
+<td style="text-align: left;"><a href="https://github.com/IlyaGrebnov/libbsc" class="uri">https://github.com/IlyaGrebnov/libbsc</a></td>
 </tr>
 <tr class="even">
-<td align="left"><code>dietgpu</code></td>
-<td align="left">GPU</td>
-<td align="left"><a href="https://github.com/facebookresearch/dietgpu" class="uri">https://github.com/facebookresearch/dietgpu</a></td>
+<td style="text-align: left;"><code>dietgpu</code></td>
+<td style="text-align: left;">GPU</td>
+<td style="text-align: left;"><a href="https://github.com/facebookresearch/dietgpu" class="uri">https://github.com/facebookresearch/dietgpu</a></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>libnxz</code></td>
-<td align="left">IBM NX</td>
-<td align="left"><a href="https://github.com/libnxz/power-gzip" class="uri">https://github.com/libnxz/power-gzip</a></td>
+<td style="text-align: left;"><code>libnxz</code></td>
+<td style="text-align: left;">IBM NX</td>
+<td style="text-align: left;"><a href="https://github.com/libnxz/power-gzip" class="uri">https://github.com/libnxz/power-gzip</a></td>
 </tr>
 <tr class="even">
-<td align="left"><code>lz4</code></td>
-<td align="left">CPU</td>
-<td align="left"><a href="https://github.com/lz4/lz4" class="uri">https://github.com/lz4/lz4</a></td>
+<td style="text-align: left;"><code>lz4</code></td>
+<td style="text-align: left;">CPU</td>
+<td style="text-align: left;"><a href="https://github.com/lz4/lz4" class="uri">https://github.com/lz4/lz4</a></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>lzma</code></td>
-<td align="left">CPU</td>
-<td align="left"><a href="https://www.7-zip.org/" class="uri">https://www.7-zip.org/</a></td>
+<td style="text-align: left;"><code>lzma</code></td>
+<td style="text-align: left;">CPU</td>
+<td style="text-align: left;"><a href="https://www.7-zip.org/" class="uri">https://www.7-zip.org/</a></td>
 </tr>
 <tr class="even">
-<td align="left"><code>nvcomp_lz4</code></td>
-<td align="left">GPU</td>
-<td align="left"><a href="https://github.com/NVIDIA/nvcomp" class="uri">https://github.com/NVIDIA/nvcomp</a></td>
+<td style="text-align: left;"><code>nvcomp_lz4</code></td>
+<td style="text-align: left;">GPU</td>
+<td style="text-align: left;"><a href="https://github.com/NVIDIA/nvcomp" class="uri">https://github.com/NVIDIA/nvcomp</a></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>zlib</code></td>
-<td align="left">CPU</td>
-<td align="left"><a href="http://zlib.net/" class="uri">http://zlib.net/</a></td>
+<td style="text-align: left;"><code>zlib</code></td>
+<td style="text-align: left;">CPU</td>
+<td style="text-align: left;"><a href="http://zlib.net/" class="uri">http://zlib.net/</a></td>
 </tr>
 <tr class="even">
-<td align="left"><code>zstd</code></td>
-<td align="left">CPU</td>
-<td align="left"><a href="https://github.com/facebook/zstd" class="uri">https://github.com/facebook/zstd</a></td>
+<td style="text-align: left;"><code>zstd</code></td>
+<td style="text-align: left;">CPU</td>
+<td style="text-align: left;"><a href="https://github.com/facebook/zstd" class="uri">https://github.com/facebook/zstd</a></td>
 </tr>
 </tbody>
 </table>
@@ -231,15 +243,15 @@ Note: these were simply run from the command line and timed using the `time` com
 <ul>
 <li><code>lzbench</code>, the benchmarking program: <a href="https://github.com/inikep/lzbench" class="uri">https://github.com/inikep/lzbench</a><br />
 </li>
-<li>my fork of <code>lzbench</code>, the benchmarking program: <a href="https://github.com/stefanrua/lzbench" class="uri">https://github.com/stefanrua/lzbench</a><br />
+<li>our fork of <code>lzbench</code>: <a href="https://github.com/stefanrua/lzbench" class="uri">https://github.com/stefanrua/lzbench</a><br />
 </li>
-<li><code>gpucomp</code>, the code for my plots and a report: <a href="https://github.com/stefanrua/gpucomp" class="uri">https://github.com/stefanrua/gpucomp</a></li>
+<li><code>gpucomp</code>, the code for the plots and a report: <a href="https://github.com/stefanrua/gpucomp" class="uri">https://github.com/stefanrua/gpucomp</a></li>
 </ul>
-<div class="footnotes">
+<section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p><a href="https://arxiv.org/pdf/1311.2540.pdf" class="uri">https://arxiv.org/pdf/1311.2540.pdf</a><a href="#fnref1">↩</a></p></li>
+<li id="fn1" role="doc-endnote"><p><a href="https://arxiv.org/pdf/1311.2540.pdf" class="uri">https://arxiv.org/pdf/1311.2540.pdf</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
-</div>
+</section>
 </body>
 </html>
