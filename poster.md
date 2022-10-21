@@ -38,27 +38,27 @@ The benchmarks were run on two machines: one with a configuration similar to the
 
 ### HLT-like machine
 
-This machine is equipped with two AMD EPYC "Milan" 75F3 CPUs[^amd_epyc] and two Nvidia T4 GPUs[^nvidia_t4]:
+This machine is equipped with two AMD EPYC "Milan" 75F3 CPUs[^amd_epyc] and two NVIDIA T4 GPUs[^nvidia_t4]:
 
 - AMD EPYC 75F3
     - 32 cores
-    - max. 4 GHz
+    - 2.95 GHz base / 4.0 GHz boost clock
     - 256 MB L3 cache
-- Nvidia Tesla T4
+- NVIDIA Tesla T4
     - 2560 CUDA cores
     - 585 MHz base / 1590 MHz boost clock
     - 16 GB GDDR6
 
 ### POWER9 machine
 
-This machine has an IBM POWER9 CPU[^p9] and four Nvidia V100 GPUs[^nvidia_v100]:
+This machine has an IBM POWER9 CPU[^p9] and four NVIDIA V100 GPUs[^nvidia_v100]:
 
 - 8335-GTH / IBM Power System AC922
 - IBM POWER9
     - 32 cores
     - max. 4 GHz
     - 320 MB L3 cache
-- 4 x Nvidia Tesla V100
+- 4 x NVIDIA Tesla V100
     - 5120 CUDA cores
     - 1530 MHz boost clock
     - 32 GB HBM2
@@ -72,30 +72,33 @@ This machine has an IBM POWER9 CPU[^p9] and four Nvidia V100 GPUs[^nvidia_v100]:
 | `bsc`[^bsc] | **B**lock-**s**orting **c**ompressor by Ilya Grebnov. |
 | `dietgpu`[^dietgpu] | Asymmetric numeral systems (ANS)[^ans] implementation by Facebook. |
 | `libxz`[^libnxz]^,^[^libnxz_git] | IBM's POWER9 processors have a hardware accelerator, NX, for `gzip`. `libnxz` is the library for compressing on it. |
-| `nvcomp`[^nvcomp]^,^[^nvcomp_git] | Compression library by Nvidia, unfortunately made proprietary in version 2.3. |
+| `nvcomp`[^nvcomp]^,^[^nvcomp_git] | Compression library by NVIDIA, unfortunately made proprietary in version 2.3. |
 -->
 
-Following is a list of the GPU compressors we benchmarked.
+As a starting point, we have measured the performance of the lossless data compressors that can be used natively in CMSSW, runing only on CPU:
+
+- **LZ4**[^lz4] \
+lz4 is a compression algorithm that prioritizes speed, based on the LZ77 dictionary compression. \
+- **zlib**[^zlib] \
+`zlib` is a compression library that implements the DEFLATE algorithm; it combines a dictionary-matching stage based on LZ77 and a Huffman entropy coding stage. \
+- **LZMA**[^lzma] \
+the Lempel–Ziv–Markov chain algorithm is an algorithm that prioritizes compression ratio over speed, using a variant of the LZ77 dictionary compression algorithm followed by a probability-based range encoder. \
+- **Zstandard**[^zstd] \
+Zstandard is a fast compression algorithm providing high compression ratios; it combines a dictionary-matching stage based on LZ77 with a large search window and a fast entropy-coding stage, using both Huffman coding and a fast tabled version of Asymmetric Numeral Systems[^ans] (ANS). \
+
+We then explored the most promising compressors that can offload at least part of their computation to GPUs:
 
 - **bsc**[^bsc] \
-Block-sorting compressor by Ilya Grebnov. \
+The Block-Sorting Compressor by Ilya Grebnov. \
 - **dietgpu**[^dietgpu] \
-Asymmetric numeral systems[^ans] (ANS) implementation by Facebook. \
-- **libnxz**[^libnxz] \
-IBM's POWER9 processors have a hardware accelerator for `gzip` called NX. `libnxz` is the library for compressing on it. \
+A GPU implementation of the Asymmetric Numeral Systems[^ans] (ANS) being developet at Facebook. \
 - **nvcomp**[^nvcomp] \
-Compression library by Nvidia, unfortunately made proprietary in version 2.3. We tested the earlier open source version which was already in `lzbench`.
+A GPU compression library developed by NVIDIA, unfortunately made proprietary in version 2.3. We tested the earlier open source version which was already in `lzbench`.
 
-The following compressors were used as the CPU point of comparison.
+Finally, we benchmarked the POWER9 NX compression hardware using `libnxz`:
+- **libnxz**[^libnxz] \
+libnxz implements a `zlib`-compatible API for Linux userspace programs that exploit the NX accelerator available on POWER9 and newer processors. \
 
-- **zlib**[^zlib] \
-a compression library that implements the DEFLATE algorithm, which is a combination of Huffman coding and LZ77, a Lempel-Ziv variant. \
-- **LZ4**[^lz4] \
-an algorithm based on LZ77 that prioritizes speed. \
-- **LZMA**[^lzma] \
-the Lempel–Ziv–Markov chain algorithm, is an algorithm that prioritizes compression ratio. \
-- **Zstandard**[^zstd] \
-a compressor that combines ANS and LZ77. \
 
 
 <!--
@@ -106,7 +109,7 @@ Asymmetric numeral systems (ANS)[^ans] implementation by Facebook. \
 - `libxz`[^libnxz]^,^[^libnxz_git] \
 IBM's POWER9 processors have a hardware accelerator, NX, for `gzip`. `libnxz` is the library for compressing on it. \
 - `nvcomp`[^nvcomp]^,^[^nvcomp_git] \
-Compression library by Nvidia, unfortunately made proprietary in version 2.3.
+Compression library by NVIDIA, unfortunately made proprietary in version 2.3.
 
 
 [^bsc]: <https://github.com/IlyaGrebnov/libbsc>
@@ -119,34 +122,47 @@ Compression library by Nvidia, unfortunately made proprietary in version 2.3.
 -->
 
 
-## Data
+## Input samples and results
 
 Two types of collisions take place at the LHC: proton-proton and heavy ion collisions. We ran the benchmarks on both types of data. In the benchmarks these events have been compressed individually, rather than as a batch, to replicate the approach used by the HLT where the events are compressed individually to ease their aggregation.
 
-### Proton-proton events
+### Proton-proton events sample
 
 The first set of measurements were performed using 100 events from proton-proton collisions collected on August 11th, 2022 with an average pileup of 50 collisions per event. Their uncompressed size ranges between 1.4 MB and 2.1 MB, with an average of 1.7 MB per event.
 
 <!--
 - HadronsTaus stream from 2022
 - pileup $\approx$ 50
--->
 - 100 files
 - 170 MB
 - 1 event per file
 - 1.4 MB to 2.1 MB each
+-->
 
-### Heavy ion events
+### Proton-proton events compression results
+
+![](results/hlt-pp.png)
+
+![](results/p9-pp.png)
+
+
+### Heavy ion events sample
 
 The second set of measurements were performed using 100 events from lead-lead collisions collected on November 25th, 2018. Their uncompressed size ranges between 640 kB and 5.5 MB, with an average of 1.3 MB per event.
 
 <!--
 - from 2018
--->
 - 100 files
 - 131 MB
 - 1 event per file
 - 644 KB to 5.5 MB each
+-->
+
+### Heavy ion events compression results
+
+![](results/hlt-hi.png)
+
+![](results/p9-hi.png)
 
 <!--
 ## Timing
@@ -157,7 +173,7 @@ The second set of measurements were performed using 100 events from lead-lead co
 - Fastest from 5 repeats
 -->
 
-
+<!--
 ## Results
 
 ![](results/hlt-pp.png)
@@ -168,7 +184,6 @@ The second set of measurements were performed using 100 events from lead-lead co
 
 ![](results/p9-hi.png)
 
-<!--
 ## First simple tests
 
 Note: these were simply run from the command line and timed using the `time` command, so copying from disk to RAM and back is included.
@@ -221,13 +236,13 @@ Code for generating plots and this poster \
 [^amd_epyc]: **AMD EPYC 75F3** \
 <https://www.amd.com/en/product/10931>
 
-[^nvidia_t4]: **Nvidia T4** \
+[^nvidia_t4]: **NVIDIA T4** \
 <https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf>
 
 [^p9]: **IBM POWER9** \
 <https://www.ibm.com/common/ssi/ShowDoc.wss?docURL=/common/ssi/rep_sm/5/872/ENUS8335-_h05/index.html>
 
-[^nvidia_v100]: **Nvidia V100** \
+[^nvidia_v100]: **NVIDIA V100** \
 <https://images.nvidia.com/content/volta-architecture/pdf/volta-architecture-whitepaper.pdf>
 
 [^zlib]: **zlib** \
@@ -275,4 +290,3 @@ A compressor that combines ANS and LZ77 \
 | `zlib` | CPU | <http://zlib.net/> |
 | `zstd` | CPU | <https://github.com/facebook/zstd> |
 -->
-
