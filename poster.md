@@ -96,6 +96,7 @@ A GPU implementation of the Asymmetric Numeral Systems[^ans] (ANS) being develop
 A GPU compression library developed by NVIDIA, unfortunately made proprietary in version 2.3. We tested the earlier open source version which was already in `lzbench`.
 
 Finally, we benchmarked the POWER9 NX compression hardware using `libnxz`:
+
 - **libnxz**[^libnxz] \
 libnxz implements a `zlib`-compatible API for Linux userspace programs that exploit the NX accelerator available on POWER9 and newer processors. \
 
