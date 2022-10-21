@@ -91,7 +91,7 @@ We then explored the most promising compressors that can offload at least part o
 - **bsc**[^bsc] \
 The Block-Sorting Compressor by Ilya Grebnov. \
 - **dietgpu**[^dietgpu] \
-A GPU implementation of the Asymmetric Numeral Systems[^ans] (ANS) being developet at Facebook. \
+A GPU implementation of the Asymmetric Numeral Systems[^ans] (ANS) being developed at Facebook. \
 - **nvcomp**[^nvcomp] \
 A GPU compression library developed by NVIDIA, unfortunately made proprietary in version 2.3. We tested the earlier open source version which was already in `lzbench`.
 
