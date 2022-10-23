@@ -84,33 +84,33 @@ Currently the data is compressed using CPUs which are used for other workloads a
 -->
 <p>As a starting point, we have measured the performance of the lossless data compressors that can be used natively in CMSSW, runing only on CPU:</p>
 <ul>
-<li><strong>LZ4</strong><a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a><br />
-lz4 is a compression algorithm that prioritizes speed, based on the LZ77 dictionary compression.<br />
+<li><strong>LZ4</strong><a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> 1.9.3<br />
+LZ4 is a compression algorithm that prioritizes speed, based on the LZ77 dictionary compression.<br />
 </li>
-<li><strong>zlib</strong><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a><br />
+<li><strong>zlib</strong><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> 1.2.11<br />
 <code>zlib</code> is a compression library that implements the DEFLATE algorithm; it combines a dictionary-matching stage based on LZ77 and a Huffman entropy coding stage.<br />
 </li>
-<li><strong>LZMA</strong><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a><br />
-the Lempel–Ziv–Markov chain algorithm is an algorithm that prioritizes compression ratio over speed, using a variant of the LZ77 dictionary compression algorithm followed by a probability-based range encoder.<br />
+<li><strong>LZMA</strong><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> 19.00<br />
+The Lempel–Ziv–Markov chain algorithm is an algorithm that prioritizes compression ratio over speed, using a variant of the LZ77 dictionary compression algorithm followed by a probability-based range encoder.<br />
 </li>
-<li><strong>Zstandard</strong><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a><br />
+<li><strong>Zstandard</strong><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a> 1.5.0<br />
 Zstandard is a fast compression algorithm providing high compression ratios; it combines a dictionary-matching stage based on LZ77 with a large search window and a fast entropy-coding stage, using both Huffman coding and a fast tabled version of Asymmetric Numeral Systems<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a> (ANS).<br />
 </li>
 </ul>
 <p>We then explored the most promising compressors that can offload at least part of their computation to GPUs:</p>
 <ul>
-<li><strong>bsc</strong><a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a><br />
+<li><strong>bsc</strong><a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a> 3.2.4<br />
 The Block-Sorting Compressor by Ilya Grebnov.<br />
 </li>
-<li><strong>dietgpu</strong><a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a><br />
+<li><strong>dietgpu</strong><a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a> (May 3, 2022 commit)<br />
 A GPU implementation of the Asymmetric Numeral Systems<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a> (ANS) being developed at Facebook.<br />
 </li>
-<li><strong>nvcomp</strong><a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a><br />
+<li><strong>nvcomp</strong><a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a> 1.2.3<br />
 A GPU compression library developed by NVIDIA, unfortunately made proprietary in version 2.3. We tested the earlier open source version which was already in <code>lzbench</code>.</li>
 </ul>
 <p>Finally, we benchmarked the POWER9 NX compression hardware using <code>libnxz</code>:</p>
 <ul>
-<li><strong>libnxz</strong><a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a><br />
+<li><strong>libnxz</strong><a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a> 0.63<br />
 libnxz implements a <code>zlib</code>-compatible API for Linux userspace programs that exploit the NX accelerator available on POWER9 and newer processors.<br />
 </li>
 </ul>

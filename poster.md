@@ -77,27 +77,27 @@ This machine has an IBM POWER9 CPU[^p9] and four NVIDIA V100 GPUs[^nvidia_v100]:
 
 As a starting point, we have measured the performance of the lossless data compressors that can be used natively in CMSSW, runing only on CPU:
 
-- **LZ4**[^lz4] \
-lz4 is a compression algorithm that prioritizes speed, based on the LZ77 dictionary compression. \
-- **zlib**[^zlib] \
+- **LZ4**[^lz4] 1.9.3 \
+LZ4 is a compression algorithm that prioritizes speed, based on the LZ77 dictionary compression. \
+- **zlib**[^zlib] 1.2.11 \
 `zlib` is a compression library that implements the DEFLATE algorithm; it combines a dictionary-matching stage based on LZ77 and a Huffman entropy coding stage. \
-- **LZMA**[^lzma] \
-the Lempel–Ziv–Markov chain algorithm is an algorithm that prioritizes compression ratio over speed, using a variant of the LZ77 dictionary compression algorithm followed by a probability-based range encoder. \
-- **Zstandard**[^zstd] \
+- **LZMA**[^lzma] 19.00 \
+The Lempel–Ziv–Markov chain algorithm is an algorithm that prioritizes compression ratio over speed, using a variant of the LZ77 dictionary compression algorithm followed by a probability-based range encoder. \
+- **Zstandard**[^zstd] 1.5.0 \
 Zstandard is a fast compression algorithm providing high compression ratios; it combines a dictionary-matching stage based on LZ77 with a large search window and a fast entropy-coding stage, using both Huffman coding and a fast tabled version of Asymmetric Numeral Systems[^ans] (ANS). \
 
 We then explored the most promising compressors that can offload at least part of their computation to GPUs:
 
-- **bsc**[^bsc] \
+- **bsc**[^bsc] 3.2.4 \
 The Block-Sorting Compressor by Ilya Grebnov. \
-- **dietgpu**[^dietgpu] \
+- **dietgpu**[^dietgpu] (May 3, 2022 commit) \
 A GPU implementation of the Asymmetric Numeral Systems[^ans] (ANS) being developed at Facebook. \
-- **nvcomp**[^nvcomp] \
+- **nvcomp**[^nvcomp] 1.2.3 \
 A GPU compression library developed by NVIDIA, unfortunately made proprietary in version 2.3. We tested the earlier open source version which was already in `lzbench`.
 
 Finally, we benchmarked the POWER9 NX compression hardware using `libnxz`:
 
-- **libnxz**[^libnxz] \
+- **libnxz**[^libnxz] 0.63 \
 libnxz implements a `zlib`-compatible API for Linux userspace programs that exploit the NX accelerator available on POWER9 and newer processors. \
 
 
